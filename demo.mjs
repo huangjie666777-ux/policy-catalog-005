@@ -1,0 +1,10 @@
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { openCatalog } from './src/catalog.mjs';
+const dir = mkdtempSync(join(tmpdir(), 'policy-demo-'));
+const db = openCatalog(join(dir, 'catalog.db'));
+db.put('acme', 'checkout', { enabled: true }, { expiresAt: Date.now() + 60000 });
+console.log(JSON.stringify(db.get('acme', 'checkout')));
+console.log(JSON.stringify(db.audit('acme')));
+db.close(); rmSync(dir, { recursive: true, force: true });
